@@ -29,17 +29,17 @@ public class Experiment {
 		int W = 5;
 		List<Integer> lengths = new ArrayList<Integer>();
 		for ( int i = 0; i < W; ++i )
-			lengths.add(i+2);
+			lengths.add(2*i+2);
 		
 		Map<Integer, Integer> weights = new HashMap<Integer, Integer>();
 		for ( int i = 0; i < W; ++i )
-			weights.put( lengths.get(i), i+1 );
+			weights.put( lengths.get(i), 2*i+1 );
 		Map<Integer, Integer> weights2 = new HashMap<Integer, Integer>();
 		for ( int i = 0; i < W; ++i )
-			weights2.put( lengths.get(i), i+1 );
+			weights2.put( lengths.get(i), 2*i+1 );
 			
 		// parameters for the detection stage in for all methods common
-		int windowSize = 200;
+		int windowSize = 300;
 		// END: OF HYPERPARAMETERS THOSE ARE MODIFIED IN Experiments1, Experiments2, Experiments3, Experiments4
 		
 		// parameters for Markov Chain based method's detection stage
