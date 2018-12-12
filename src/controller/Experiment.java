@@ -39,7 +39,7 @@ public class Experiment {
 			weights2.put( lengths.get(i), 2*i+1 );
 			
 		// parameters for the detection stage in for all methods common
-		int windowSize = 300;
+		int windowSize = 200;
 		// END: OF HYPERPARAMETERS THOSE ARE MODIFIED IN Experiments1, Experiments2, Experiments3, Experiments4
 		
 		// parameters for Markov Chain based method's detection stage
