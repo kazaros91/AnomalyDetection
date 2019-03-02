@@ -23,22 +23,23 @@ public class Experiment {
 	}
 			
 	public static void test() {
-		// BEGIN defining the hyperparameters
+		// BEGIN: defining the hyper parameters
 		// BEGIN: HYPERPARAMETERS THOSE ARE MODIFIED IN Experiments1, Experiments2, Experiments3, Experiments4
-		// parameters for the training stage for all methods in common
+		
+		// hyper parameters in common for the training stage for all methods in common, by default this case is Experiement3
 		int W = 5;
 		List<Integer> lengths = new ArrayList<Integer>();
 		for ( int i = 0; i < W; ++i )
-			lengths.add(2*i+2);
+			lengths.add(i+2);
 		
 		Map<Integer, Integer> weights = new HashMap<Integer, Integer>();
 		for ( int i = 0; i < W; ++i )
-			weights.put( lengths.get(i), 2*i+1 );
+			weights.put( lengths.get(i), i+1 );  // weights == e
 		Map<Integer, Integer> weights2 = new HashMap<Integer, Integer>();
 		for ( int i = 0; i < W; ++i )
-			weights2.put( lengths.get(i), 2*i+1 );
+			weights2.put( lengths.get(i), i+1 );  // weights2 == e2
 			
-		// parameters for the detection stage in for all methods common
+		// hyper parameters in common for the detection stage in for all methods
 		int windowSize = 200;
 		// END: OF HYPERPARAMETERS THOSE ARE MODIFIED IN Experiments1, Experiments2, Experiments3, Experiments4
 		

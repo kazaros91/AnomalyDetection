@@ -112,7 +112,7 @@ public class DAO {
 		finally {
 		}
 		
-		return actions;  //  note that the actions are ordered chronologically in the .csv file
+		return actions;   //  note that the actions are ordered chronologically in the .csv file
 	}
 	
 	private List<UserBehavior> getUserBehaviorByUserIdCSV(int userId) {

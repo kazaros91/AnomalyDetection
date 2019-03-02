@@ -95,7 +95,9 @@ public class MarkovMethod implements VariableLengthMethod<String> {
  			}
 		}
 
- 		int length = LGS.getWeightedFrequency(shortSequenceMax) > 0 ? shortSequenceMax.length() : 1;
+ 		int length = 1;
+ 		if ( Profile.getIDF(shortSequenceMax) >= thresholdIdf )
+ 			length = LGS.getWeightedFrequency(shortSequenceMax) > 0 ? shortSequenceMax.length() : 1;
  		
  		String g = ListString.getString(s, j, j + length);
  		List<String> pattern = new ArrayList<String>();

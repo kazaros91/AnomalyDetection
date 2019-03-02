@@ -55,22 +55,6 @@ public class Profile {
 		this.sequences.get(i).remove(j);
 	}
 	
-//	   get value from matrix by a single index
-/*	public Sequence get(int index) {
-		
-		int i = 0;
-		int summ = 0;
-		for ( i = 0; i < sequences.size(); ++i) {
-			summ += sequences.get(i).size();
-			if ( index < summ )   //  finding out the set where index belongs to 
-				break;
-		}
-		int offset = summ - sequences.get(i).size();
-		int j = index - offset;
-		
-		return sequences.get(i).get(j);
-	}*/
-	
 	public Sequence get(int i, int j) {
 		return sequences.get(i).get(j);
 	}

@@ -37,9 +37,16 @@ public class MarkovF2Method extends MarkovMethod {
  			}	
 		}
 
- 		int length = LGS.getWeightedFrequency(shortSequenceMax) > 0 ? shortSequenceMax.length() : 1;
- 	    // different from MarkovMethod
- 		int length2 = LGS.getWeightedFrequency2(shortSequenceMax2) > 0 ? shortSequenceMax2.length() : 1;
+ 		int length = 1;
+ 		if (Profile.getIDF(shortSequenceMax) >= thresholdIdf) {
+	 		length = LGS.getWeightedFrequency(shortSequenceMax) > 0 ? shortSequenceMax.length() : 1;
+ 		}
+ 		
+ 		int length2 = 1;
+ 		if (Profile.getIDF(shortSequenceMax2) >= thresholdIdf) {
+	 	    // different from MarkovMethod
+	 		length2 = LGS.getWeightedFrequency2(shortSequenceMax2) > 0 ? shortSequenceMax2.length() : 1;
+ 		}
  		
  		String g = ListString.getString(s, j, j + length);
  	    // different from MarkovMethod

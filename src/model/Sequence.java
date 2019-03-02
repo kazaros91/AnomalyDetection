@@ -85,23 +85,24 @@ public class Sequence {
 								  + "f2 = "	+ String.valueOf( getWeightedFrequency2() ) + ")" ;
 	}
 	
-	public static void main(String [] args) {
-	
-		List<Sequence> list = new ArrayList<Sequence>();
-		list.add(new Sequence("1", 1.0, 2.0));
-		list.add(new Sequence("2", 3.0, 1.0));
-		list.add(new Sequence("4", 1.4, 5.0));
-		list.add(new Sequence("11", 0.8, 2.0));
-		list.add(new Sequence("21", 3.0, 4.0));
-		list.add(new Sequence("13", 1.4, 2.5));
-		
-//		Collections.sort(list, Sequence.SequenceFrequencyComparator);
-		list.sort(Sequence.SequenceFrequencyComparator);
-		System.out.println(list);
-		
-		Collections.sort(list, Sequence.SequenceFrequency2Comparator);
-		System.out.println(list);
-	}
+//  uncomment to test Sequence
+//	public static void main(String [] args) {
+//	
+//		List<Sequence> list = new ArrayList<Sequence>();
+//		list.add(new Sequence("1", 1.0, 2.0));
+//		list.add(new Sequence("2", 3.0, 1.0));
+//		list.add(new Sequence("4", 1.4, 5.0));
+//		list.add(new Sequence("11", 0.8, 2.0));
+//		list.add(new Sequence("21", 3.0, 4.0));
+//		list.add(new Sequence("13", 1.4, 2.5));
+//		
+////		Collections.sort(list, Sequence.SequenceFrequencyComparator);
+//		list.sort(Sequence.SequenceFrequencyComparator);
+//		System.out.println(list);
+//		
+//		Collections.sort(list, Sequence.SequenceFrequency2Comparator);
+//		System.out.println(list);
+//	}
 
 	
 }
