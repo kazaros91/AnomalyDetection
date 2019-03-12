@@ -24,62 +24,6 @@ public class DAO {
 	public static int MAX_ID = 5;
 	
 	public DAO() {}
- 
-    
-//    public List<String> getActionsByRelativeUserId(int relativeUserId) {
-//	    	if (relativeUserId < DAO.MIN_ID || DAO.MAX_ID > 5 )
-//	    		System.out.println("Invalid user Id");
-//    	
-//	    final int USER_ID1 = 36233277;  
-//		final int USER_ID2 = 130270245;
-//		final int USER_ID3 = 65645933;  
-//		final int USER_ID4 = 59511789;  
-//		final int USER_ID5 = 73196588; 
-//			
-//		
-//		switch ( relativeUserId ) {
-//			case 1: { 
-//				return getActionsFromCSV(USER_ID1);
-//			}
-//			case 2: { 
-//				return getActionsFromCSV(USER_ID2);
-//			}
-//			case 3: { 
-//				return getActionsFromCSV(USER_ID3);
-//			}
-//			case 4: { 
-//				return getActionsFromCSV(USER_ID4);
-//			}
-//			case 5: { 
-//				return getActionsFromCSV(USER_ID5);
-//			}
-//		}
-//				
-//		return null;
-//    }	
-	
-//	////// NEW CODE FOR CSV
-//	public List<String> getActionsFromCSVAll (int userId) {
-//		List<UserBehavior> behavior = getUserBehaviorByUserIdCSV(userId);
-//		
-//		for ( int i=0; i < behavior.size(); ++i ) {
-//			UserBehavior u = behavior.get(i);
-//			System.out.println( "BEHAVIOR: " + u.getUserId() + " " +
-//											 u.getBehaviorType() + " " + 
-//											 u.getDateTime() );
-//		}
-//		List<String> actions = new ArrayList<String>();
-////		StringBuilder s = new StringBuilder();
-//		for (int i = 0; i < behavior.size(); ++i) {
-//		     String currentAction = Integer.toString( behavior.get(i).getBehaviorType() );   //  convert current action to String 
-//		     actions.add(currentAction);
-////		     s.append( currentAction );
-//		}
-//
-////		System.out.println(" HHH " + actions.subList(0, 5).toString() );
-////		return s.toString();
-//		return actions;
-//	}
 
 	public List<String> getActionsFromCSV(int userId) {
 		List<String> actions = new ArrayList<String>();
@@ -214,10 +158,10 @@ public class DAO {
 		 
 		 List<String> User = this.getActionsFromCSV(id);
 		 final int DETECTION_DATA_SIZE = 5000;
+		 
 		 List<String> falsePositiveData = new ArrayList<String>();
 		 falsePositiveData = User.subList( User.size() - DETECTION_DATA_SIZE, User.size() );
-		 System.out.println("DetectionData: userId = " + id + ", User size = " +  User.size() );
-		 
+//		 System.out.println("DetectionData: userId = " + id + ", data size = " +  User.size() );
 		 
 		 List< List<String> > truePositiveData = new ArrayList< List<String> >();
 		 for (int i = DAO.MIN_ID; i < id; ++i) {

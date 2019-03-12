@@ -18,7 +18,7 @@ public class MarkovMethod implements VariableLengthMethod<String> {
 	
 	protected int W;   //  W is the maximum length of variable-length sequence
 	protected List<Integer> lengths;  //  is the set of lengths of variable-length sequences
-	protected int N;   //  N is the number of states, N-1 is the the number of sets
+	protected int N;   //  N is the number of sets, N+1 is the the number of states
 	protected Map<Integer, Integer> weights;   //  the weights of of frequencies of short sequences
 	protected Map<Integer, Integer> weights2;   //  the weights of of frequencies of weighted frequencies
 	
@@ -52,10 +52,10 @@ public class MarkovMethod implements VariableLengthMethod<String> {
 	public Profile divideToSets() {   		
 
 		int H = LGS.size();
-		int u = Math.floorDiv(H, N-1);
-		int v = u + 1; 
-		int h = H - (N-1)*u;
-		assert( H == h*v + (N-h-1)*u );		
+		int u = Math.floorDiv(H, N); //  u is alfa in the paper
+		int v = u + 1; //  v is beta in the paper
+		int h = H - N*u;
+		assert( H == h*v + (N-h)*u );		
 		
 		//	Creating lambda Profile
 		Profile Lambda = new Profile();
@@ -68,15 +68,15 @@ public class MarkovMethod implements VariableLengthMethod<String> {
 		}
 		//  note that the last added element has index h*v-1
 		
-		for ( int i = 0; i < N-h-1; ++i ) {   //  (N-h-1)*u sets
+		for ( int i = 0; i < N-h; ++i ) {   //  (N-h)*u sets
 			ArrayList<Sequence> sequences = new ArrayList<Sequence>();  // to build lambda[i] 
 			for ( int j = 0; j < u; ++j ) {
 				sequences.add( LGS.get( h*v + i*u + j ) );   //  lambda[i] = LGS
 			}
 			Lambda.add(sequences);
 		}
-		assert( N-1 == Lambda.size() );
-		//  note that the last added element has index H-1 ==  m(1) + m(2) + ... + m(W) - 1 
+		assert( N == Lambda.size() );
+		//  note that the last added element has index H-1 == t(1) + t(2) + ... + t(W) - 1 
 		//	end of creating lambda Profile
 	
 		return Lambda;
@@ -84,20 +84,15 @@ public class MarkovMethod implements VariableLengthMethod<String> {
 
 	public List<String> mineBehavioralPattern(List<String> s, int j) {
 		
-		int iMax = 0;
-		String shortSequenceMax = ListString.getString( s, j, j + lengths.get(iMax) );
- 		for ( int i = 1; i < W; ++i ) {
- 			String shortSequence = ListString.getString( s, j, j + lengths.get(i) );   //  take l.get(i) characters from s starting at j
- 			if ( Profile.getIDF(shortSequence) >= thresholdIdf ) 
- 			{
- 				if ( LGS.getWeightedFrequency(shortSequence) > LGS.getWeightedFrequency(shortSequenceMax) )
- 					shortSequenceMax = shortSequence;
- 			}
+		int kMax = 0;
+		String shortSequenceMax = ListString.getString( s, j, j + lengths.get(kMax) );
+ 		for ( int k = 1; k < W; ++k ) {
+ 			String shortSequence = ListString.getString( s, j, j + lengths.get(k) );   //  take l.get(i) characters from s starting at j
+ 			if ( LGS.getWeightedFrequency(shortSequence) > LGS.getWeightedFrequency(shortSequenceMax) )
+ 				shortSequenceMax = shortSequence;
 		}
 
- 		int length = 1;
- 		if ( Profile.getIDF(shortSequenceMax) >= thresholdIdf )
- 			length = LGS.getWeightedFrequency(shortSequenceMax) > 0 ? shortSequenceMax.length() : 1;
+ 		int length = LGS.getWeightedFrequency(shortSequenceMax) > 0 ? shortSequenceMax.length() : 1;
  		
  		String g = ListString.getString(s, j, j + length);
  		List<String> pattern = new ArrayList<String>();
@@ -115,11 +110,11 @@ public class MarkovMethod implements VariableLengthMethod<String> {
 			List<String> pattern = mineBehavioralPattern(s, j);
 			String g = pattern.get(0);
 			
-			int state = Lambda.getIndex(g);   //  The High-Frequency-First scheme to  match the states
+			int state = Lambda.getIndex(g);   //  get index of set in Lambda where g belongs to
 			states.add(state);
-			
-			int k = g.length();
-			j = j+k;	
+				
+			int i = g.length();
+			j = j+i;	
 		}
 		
 		return states;
@@ -127,11 +122,12 @@ public class MarkovMethod implements VariableLengthMethod<String> {
 	
 	public void buildProbabilityDistributions(List<Integer> states) {	
 	    //  initializing the parameters
-		P = new double[N][N];   //  N is the number of states   
-		int [] Y = new int[N];
-		for ( int i = 0; i < N; ++i ) {    
+		int N1 = N + 1;   //  N1 is the number of of different states
+		P = new double[N1][N1];
+		int [] Y = new int[N1];
+		for ( int i = 0; i < N1; ++i ) {    
 			Y[i] = 0;
-			for ( int j = 0; j < N ; ++j ) {
+			for ( int j = 0; j < N1; ++j ) {
 				P[i][j] = 0;
 			}
 		}
@@ -148,14 +144,14 @@ public class MarkovMethod implements VariableLengthMethod<String> {
 		}
 			
 		A = new ArrayList<Double>();
-		for (int i = 0; i < N; ++i) {
+		for (int i = 0; i < N1; ++i) {
 			A.add( (double) Y[i] / (double) M );   //  normalize the occurrence times of every state
-			for ( int j = 0; j < N; ++j )
+			for ( int j = 0; j < N1; ++j )
 				if ( Y[i] != 0 )
 					P[i][j] = P[i][j] / (double) Y[i];
 		}
 			
-		P[n][n] = 1;
+		P[N1-1][N1-1] = 1;
 	}
 
 	@Override
@@ -165,12 +161,11 @@ public class MarkovMethod implements VariableLengthMethod<String> {
 		LGS = new Library();
 		LGS.generateVariableLengthSequences(trainingSequence, lengths, weights, weights2);
 		
-		filterProfile();
 		LGS.sort(Sequence.SequenceFrequencyComparator);
 		Lambda = divideToSets();    //  divide the LGS (Library of General Sequences) into N-1 sets and store it in a Profile
 		
 		List<Integer> states = defineStates(trainingSequence);
-//		System.out.println("states = " + states + ", size = " + states.size());
+		System.out.println("states = " + states + ", size = " + states.size());
 		
 		this.buildProbabilityDistributions(states);		
 	}
@@ -263,13 +258,12 @@ public class MarkovMethod implements VariableLengthMethod<String> {
 	 	return D;
 	}
 	
-	public void setTrainingParameters(List<Integer> lengths, int N, Map<Integer, Integer> weights, Map<Integer, Integer> weights2, double thesholdIdf) {
+	public void setTrainingParameters(List<Integer> lengths, int N, Map<Integer, Integer> weights, Map<Integer, Integer> weights2) {
 		this.lengths = lengths;
 		this.W = lengths.size();
 		this.N = N;
 		this.weights = weights;
 		this.weights2 = weights2;   //  only used for MarkovF2 based methods
-		this.thresholdIdf = thesholdIdf;
 	}
 	
 	public void setDetectionParameters(int windowSize, double eta, double thresholdDecision) {

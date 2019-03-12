@@ -9,43 +9,37 @@ import model.Profile;
 import model.Sequence;
 
 
-public class MarkovF2Method extends MarkovMethod {
+public class MarkovFVMethod extends MarkovMethod {
 	
 	protected Profile Lambda2;
+	protected List<Profile> Lambda_;
+	private int V;
 	
-	public MarkovF2Method() {
+	public MarkovFVMethod() {
 		super();
 		
 		Lambda2 = new Profile();
+		Lambda_ = new ArrayList<Profile>();
+		V = 2;
 	}
 
 	public List<String> mineBehavioralPattern(List<String> s, int j) {
 		
-		int kMax = 0;
-		String shortSequenceMax = ListString.getString( s, j, j + lengths.get(kMax) );
-		String shortSequenceMax2 = ListString.getString( s, j, j + lengths.get(kMax) );
- 		for ( int k = 1; k < W; ++k ) {
- 			String shortSequence = ListString.getString( s, j, j + lengths.get(k) );   //  take l.get(i) characters from s starting at j
-	 		if ( LGS.getWeightedFrequency(shortSequence) > LGS.getWeightedFrequency(shortSequenceMax) )
-	 			shortSequenceMax = shortSequence;
-	 			
-	 		// different from MarkovMethod
-	 		if ( LGS.getWeightedFrequency2(shortSequence) > LGS.getWeightedFrequency2(shortSequenceMax2) )
-	 	 		shortSequenceMax2 = shortSequence;
+		List<String> pattern = new ArrayList<String>();
+		for ( int v = 1; v <= V; ++v ) {
+			int kMax = 0;
+			String shortSequenceMax = ListString.getString( s, j, j + lengths.get(kMax) );
+	 		for ( int k = 1; k < W; ++k ) {
+	 			String shortSequence = ListString.getString( s, j, j + lengths.get(k) );   //  take l.get(i) characters from s starting at j
+		 		if ( LGS.getWeightedFrequency(shortSequence) > LGS.getWeightedFrequency(shortSequenceMax) )
+		 			shortSequenceMax = shortSequence;
+			}
+	
+		 	int length = LGS.getWeightedFrequency(shortSequenceMax) > 0 ? shortSequenceMax.length() : 1;
+	 		
+	 		String g_v = ListString.getString(s, j, j + length);
+	 		pattern.add(g_v);
 		}
-
-	 	int length = LGS.getWeightedFrequency(shortSequenceMax) > 0 ? shortSequenceMax.length() : 1;
- 		
-	 	// different from MarkovMethod
-	 	int length2 = LGS.getWeightedFrequency2(shortSequenceMax2) > 0 ? shortSequenceMax2.length() : 1;
- 		
- 		String g = ListString.getString(s, j, j + length);
- 	    // different from MarkovMethod
- 		String gg = ListString.getString(s, j, j + length2);
- 		
- 		// different from MarkovMethod
- 		List<String> pattern = new ArrayList<String>();
- 		pattern.add(g); pattern.add(gg);
  		return pattern;
 	}
 	
@@ -57,21 +51,17 @@ public class MarkovF2Method extends MarkovMethod {
 		while ( j < r - lengths.get(W-1) + 1 ) {
 			List<String> pattern = mineBehavioralPattern(s, j);
 		    
-			String g = pattern.get(0);   //  getting behavioral pattern with maximum weighted frequency at position j
-			int state0 = Lambda.getIndex(g);   //  The High-Frequency-First scheme to  match the states
-			
-			// added 
-			String gg = pattern.get(1);   //  getting behavioral pattern with maximum weighted frequency2 at position j
-			int state1 = Lambda2.getIndex(gg);
-			
-			int state;
-			if ( state0 == N )
-				state = N*N;
-			else
-				state = state0 * N + state1;
+			int state = 0;  //   sigma_m
+			int iMax = 1;
+			for ( int v = 0; v < V; ++v ) {
+				String g = pattern.get(v);   //  getting behavioral pattern with maximum weighted frequency at position j
+				int state_v = Lambda_.get(v).getIndex(g);   //  getting index of the set in Lambda[v] where g belongs to
+				state += state_v * Math.pow(N, V-v-1);
+				
+				iMax = g.length() > iMax ? g.length() : iMax;
+				
+			}
 			states.add(state);
-			
-			int iMax = g.length() > gg.length() ? g.length() : gg.length();
 			j += iMax;
 		}
 		
@@ -80,12 +70,12 @@ public class MarkovF2Method extends MarkovMethod {
 
 	public void buildProbabilityDistributions(List<Integer> states) {	
 	    //  initializing the parameters
-		int N2 = N*N + 1;   //  N1 is the number of different states
-		P = new double[N2][N2];
-		int [] Y = new int[N2];
-		for ( int i = 0; i < N2; ++i ) {    
+		int NV = (int) Math.pow(N, V);
+		P = new double[NV][NV];
+		int [] Y = new int[NV];
+		for ( int i = 0; i < NV; ++i ) {    
 			Y[i] = 0;
-			for ( int j = 0; j < N2; ++j ) {
+			for ( int j = 0; j < NV; ++j ) {
 				P[i][j] = 0;
 			}
 		}
@@ -102,14 +92,14 @@ public class MarkovF2Method extends MarkovMethod {
 		}
 			
 		A = new ArrayList<Double>();
-		for (int i = 0; i < N2; ++i) {
+		for (int i = 0; i < NV; ++i) {
 			A.add( (double) Y[i] / (double) M );   //  normalize the occurrence times of every state
-			for ( int j = 0; j < N2; ++j )
+			for ( int j = 0; j < NV; ++j )
 				if ( Y[i] != 0 )
 					P[i][j] = P[i][j] / (double) Y[i];
 		}
 			
-		P[N2-1][N2-1] = 1;
+		P[NV-1][NV-1] = 1;
 	}
  
 	@Override
@@ -124,6 +114,8 @@ public class MarkovF2Method extends MarkovMethod {
 		
 		LGS.sort(Sequence.SequenceFrequency2Comparator);
 		Lambda2 = divideToSets();
+		
+		Lambda_.add(Lambda); Lambda_.add(Lambda2);
 		
 		List<Integer> states = defineStates(trainingSequence);
 //		System.out.println("states = " + states + ", size = " + states.size());

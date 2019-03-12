@@ -14,7 +14,6 @@ import org.knowm.xchart.XYSeries;
 
 public class PlotXY {
 
-//	private List<XYSeries> collection;
 	private XYChart chart;
 	private String plotName;
 	private String outputDirectory;
@@ -57,7 +56,7 @@ public class PlotXY {
 	    }
     }
 	
-	// uncomment for testing PlotXY
+	// uncomment to test PlotXY
 //	public static void main(String [] args) {
 //		XYChart chart = new XYChart(500, 400);
 //	    chart.setTitle("chartName");
