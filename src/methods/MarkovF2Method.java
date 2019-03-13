@@ -34,14 +34,20 @@ public class MarkovF2Method extends MarkovMethod {
 	 	 		shortSequenceMax2 = shortSequence;
 		}
 
-	 	int length = LGS.getWeightedFrequency(shortSequenceMax) > 0 ? shortSequenceMax.length() : 1;
+ 		String g;
+ 		if ( LGS.getWeightedFrequency(shortSequenceMax) > 0 )
+ 			g = shortSequenceMax;
+ 		else
+ 			return null;
+ 		String gg = shortSequenceMax2;
  		
+//	 	int length = LGS.getWeightedFrequency(shortSequenceMax) > 0 ? shortSequenceMax.length() : 1;
 	 	// different from MarkovMethod
-	 	int length2 = LGS.getWeightedFrequency2(shortSequenceMax2) > 0 ? shortSequenceMax2.length() : 1;
+//	 	int length2 = LGS.getWeightedFrequency2(shortSequenceMax2) > 0 ? shortSequenceMax2.length() : 1;
  		
- 		String g = ListString.getString(s, j, j + length);
+// 		String g = ListString.getString(s, j, j + length);
  	    // different from MarkovMethod
- 		String gg = ListString.getString(s, j, j + length2);
+// 		String gg = ListString.getString(s, j, j + length2);
  		
  		// different from MarkovMethod
  		List<String> pattern = new ArrayList<String>();
@@ -57,21 +63,24 @@ public class MarkovF2Method extends MarkovMethod {
 		while ( j < r - lengths.get(W-1) + 1 ) {
 			List<String> pattern = mineBehavioralPattern(s, j);
 		    
-			String g = pattern.get(0);   //  getting behavioral pattern with maximum weighted frequency at position j
-			int state0 = Lambda.getIndex(g);   //  The High-Frequency-First scheme to  match the states
-			
-			// added 
-			String gg = pattern.get(1);   //  getting behavioral pattern with maximum weighted frequency2 at position j
-			int state1 = Lambda2.getIndex(gg);
-			
+			int iMax;
 			int state;
-			if ( state0 == N )
-				state = N*N;
-			else
+			if ( pattern != null ) {  // pattern is not empty
+				String g = pattern.get(0);   //  getting behavioral pattern with maximum weighted frequency at position j
+				int state0 = Lambda.getIndex(g);   //  The High-Frequency-First scheme to  match the states
+				
+				// added 
+				String gg = pattern.get(1);   //  getting behavioral pattern with maximum weighted frequency2 at position j
+				int state1 = Lambda2.getIndex(gg);
 				state = state0 * N + state1;
-			states.add(state);
+				iMax = g.length() > gg.length() ? g.length() : gg.length();
+			}
+			else {
+				state = N*N;
+				iMax = 1;
+			}
 			
-			int iMax = g.length() > gg.length() ? g.length() : gg.length();
+			states.add(state);
 			j += iMax;
 		}
 		

@@ -91,10 +91,15 @@ public class MarkovMethod implements VariableLengthMethod<String> {
  			if ( LGS.getWeightedFrequency(shortSequence) > LGS.getWeightedFrequency(shortSequenceMax) )
  				shortSequenceMax = shortSequence;
 		}
-
- 		int length = LGS.getWeightedFrequency(shortSequenceMax) > 0 ? shortSequenceMax.length() : 1;
  		
- 		String g = ListString.getString(s, j, j + length);
+ 		String g;
+ 		if ( LGS.getWeightedFrequency(shortSequenceMax) > 0 )
+ 			g = shortSequenceMax;
+ 		else
+ 			return null;
+// 		int length = LGS.getWeightedFrequency(shortSequenceMax) > 0 ? shortSequenceMax.length() : 1;
+ 		
+// 		String g = ListString.getString(s, j, j + length);
  		List<String> pattern = new ArrayList<String>();
  		pattern.add(g);
  		
@@ -108,12 +113,21 @@ public class MarkovMethod implements VariableLengthMethod<String> {
 		int j = 0;
 		while ( j < r - lengths.get(W-1) + 1 ) {
 			List<String> pattern = mineBehavioralPattern(s, j);
-			String g = pattern.get(0);
 			
-			int state = Lambda.getIndex(g);   //  get index of set in Lambda where g belongs to
-			states.add(state);
+			int i;
+			int state;
+			if ( pattern != null ) {  // pattern is not empty
+				String g = pattern.get(0);
 				
-			int i = g.length();
+				state = Lambda.getIndex(g);   //  get index of set in Lambda where g belongs to
+				i = g.length();
+			}
+			else {
+				state = N;
+				i = 1;
+			}
+			
+			states.add(state);
 			j = j+i;	
 		}
 		
